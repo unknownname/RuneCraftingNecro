@@ -1,2 +1,2 @@
-rootProject.name = "CraftingTest"
+rootProject.name = "GemMining"
 
