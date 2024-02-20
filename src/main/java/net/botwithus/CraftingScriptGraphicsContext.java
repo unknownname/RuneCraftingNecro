@@ -1,10 +1,14 @@
 package net.botwithus;
 
+import net.botwithus.rs3.events.impl.SkillUpdateEvent;
+import net.botwithus.rs3.game.Client;
+import net.botwithus.rs3.game.skills.Skill;
 import net.botwithus.rs3.imgui.ImGui;
 import net.botwithus.rs3.imgui.ImGuiWindowFlag;
 import net.botwithus.rs3.script.ScriptConsole;
 import net.botwithus.rs3.script.ScriptGraphicsContext;
-
+import net.botwithus.rs3.game.skills.Skills;
+import net.botwithus.rs3.game.scene.entities.characters.player.LocalPlayer;
 
 public class CraftingScriptGraphicsContext extends ScriptGraphicsContext {
 
@@ -14,6 +18,7 @@ public class CraftingScriptGraphicsContext extends ScriptGraphicsContext {
         super(scriptConsole);
         this.script = script;
     }
+
 
     @Override
     public void drawSettings() {
@@ -33,7 +38,15 @@ public class CraftingScriptGraphicsContext extends ScriptGraphicsContext {
                     }
                     ImGui.EndTabItem();
                 }
-                if (ImGui.BeginTabItem("Other", ImGuiWindowFlag.None.getValue())) {
+                if (ImGui.BeginTabItem("Stat", ImGuiWindowFlag.None.getValue())) {
+                    ImGui.Text("Mining");
+                    ImGui.Text("Mining Level" + Skills.MINING.getLevel());
+                    ImGui.Text("Remaining XP to Next level" + Skills.MINING.getExperienceToNextLevel());
+                    //script.setSomeBool(ImGui.Checkbox("Are you cool?", script.isSomeBool()));
+                    ImGui.EndTabItem();
+                }
+                if (ImGui.BeginTabItem("More", ImGuiWindowFlag.None.getValue())) {
+                    ImGui.Text("More");
                     script.setSomeBool(ImGui.Checkbox("Are you cool?", script.isSomeBool()));
                     ImGui.EndTabItem();
                 }

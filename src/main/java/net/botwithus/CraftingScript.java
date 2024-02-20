@@ -9,8 +9,10 @@ import net.botwithus.rs3.game.Area;
 import net.botwithus.rs3.game.Client;
 import net.botwithus.rs3.game.Coordinate;
 import net.botwithus.rs3.game.Item;
+import net.botwithus.rs3.game.actionbar.ActionBar;
 import net.botwithus.rs3.game.hud.interfaces.Component;
 import net.botwithus.rs3.game.hud.interfaces.Interfaces;
+import net.botwithus.rs3.game.queries.builders.ItemQuery;
 import net.botwithus.rs3.game.queries.builders.components.ComponentQuery;
 import net.botwithus.rs3.game.queries.builders.items.InventoryItemQuery;
 import net.botwithus.rs3.game.queries.builders.objects.SceneObjectQuery;
@@ -22,16 +24,25 @@ import net.botwithus.rs3.script.Execution;
 import net.botwithus.rs3.script.LoopingScript;
 import net.botwithus.rs3.script.config.ScriptConfig;
 import net.botwithus.rs3.util.Regex;
+import net.botwithus.rs3.game.*;
 
 
+import javax.swing.plaf.basic.BasicInternalFrameTitlePane;
 import java.util.Random;
+import java.util.function.Function;
+import java.util.random.RandomGenerator;
+import java.util.random.RandomGeneratorFactory;
 
 public class CraftingScript extends LoopingScript {
 
     private BotState botState = BotState.IDLE;
     private boolean someBool = true;
     private Random random = new Random();
-    private Area AlKharid = new Area.Rectangular(new Coordinate(3274,3168,0), new Coordinate(3267,3170,0));
+    private Area AlKharid = new Area.Rectangular(new Coordinate(3274,3168,0), new Coordinate(3267,3171,0));
+    private Area AlKharid1 = new Area.Rectangular(new Coordinate(3301,3284,0), new Coordinate(3306,3274,0));
+    private Area AlKharid2 = new Area.Rectangular(new Coordinate(3301,3241,0), new Coordinate(3306,3231,0));
+    private Area AlKharid3 = new Area.Rectangular(new Coordinate(3301,3206,0), new Coordinate(3304,3197,0));
+    private Area AlKharid4 = new Area.Rectangular(new Coordinate(3289,3181,0), new Coordinate(3295,3181,0));
 
     enum BotState {
         //define your own states here
@@ -75,10 +86,68 @@ public class CraftingScript extends LoopingScript {
         }
     }
 
+    private boolean WalkToAlKharid(LocalPlayer player )
+    {
+        if(player.getCoordinate().getRegionId() != 13105)
+        {
+            println("Player not at AlKharid Area");
+            println("Region ID" + player.getCoordinate().getRegionId());
+            println("Region X" + player.getCoordinate().getX());
+            println("Region Y" + player.getCoordinate().getY());
+           // Travel.walkTo(3300,3274);
+
+
+        }
+        Coordinate AlKharid1Random= AlKharid1.getRandomCoordinate();
+        Travel.walkTo(AlKharid1Random.getX(), AlKharid1Random.getY());
+        Execution.delayUntil(20000,() -> {
+
+            assert player != null;
+            return AlKharid1.contains(player.getCoordinate());
+        });
+        Coordinate AlKharid2Random= AlKharid2.getRandomCoordinate();
+        Travel.walkTo(AlKharid2Random.getX(), AlKharid2Random.getY());
+        Execution.delayUntil(20000,() -> {
+
+            assert player != null;
+            return AlKharid2.contains(player.getCoordinate());
+        });
+        Coordinate AlKharid3Random= AlKharid3.getRandomCoordinate();
+        Travel.walkTo(AlKharid3Random.getX(), AlKharid3Random.getY());
+        Execution.delayUntil(20000,() -> {
+
+            assert player != null;
+            return AlKharid3.contains(player.getCoordinate());
+        });
+        Coordinate AlKharid4Random= AlKharid4.getRandomCoordinate();
+        Travel.walkTo(AlKharid4Random.getX(), AlKharid4Random.getY());
+        Execution.delayUntil(20000,() -> {
+
+            assert player != null;
+            return AlKharid4.contains(player.getCoordinate());
+        });
+
+        if(player.getCoordinate().getRegionId() == 13105 )
+        {
+            println("AlKharid Area reached");
+            println("Cord X" + player.getCoordinate().getX());
+            println("Cord Y" + player.getCoordinate().getY());
+            return true;
+        }
+        else
+        {
+            println("You are not in the area");
+            return false;
+        }
+
+    }
+
+
 
     private long handleBanking(LocalPlayer player)
     {
-        println("Player moving:" +player.isMoving());
+        println("Player moving 1:" +player.isMoving());
+
         if(player.isMoving())
         {
             return random.nextLong(3000,5000);
@@ -86,12 +155,17 @@ public class CraftingScript extends LoopingScript {
         if (Bank.isOpen())
         {
             println("Bank is open");
-
+            Bank.depositAllExcept(54004);
+            Bank.close();
             botState = BotState.SKILLING;
+        }
+        if (player.getCoordinate().getRegionId() != 13105)
+        {
+            WalkToAlKharid(player);
         }
         else
         {
-            ResultSet<SceneObject> banks = SceneObjectQuery.newQuery().name("Bank booth ").option("Bank").inside(AlKharid).id(76274).results();
+            ResultSet<SceneObject> banks = SceneObjectQuery.newQuery().name("Bank booth").option("Bank").inside(AlKharid).results();
             if (banks.isEmpty())
             {
                 println("Bank query was empty.");
@@ -102,13 +176,14 @@ public class CraftingScript extends LoopingScript {
                 if (bank != null) {
                     println("Yay, we found our bank.");
                     println("Interacted bank: " + bank.interact("Bank"));
+                    Bank.depositAllExcept(54004);
+                    Bank.close();
                 }
             }
         }
 
         return random.nextLong(1500,3000);
     }
-
 
 
     private long handleSkilling(LocalPlayer player) {
@@ -122,53 +197,43 @@ public class CraftingScript extends LoopingScript {
          }
         println("Player moving:" +player.isMoving());
         println("Animation ID: " +  player.getAnimationId());
-         if (player.getAnimationId() != -1 || player.isMoving()){
-          return random.nextLong(3000,5000);
+       // println("Region ID" + player.getCoordinate().getRegionId());
+         if (player.getAnimationId() != -1 || player.isMoving() && player.getCoordinate().getRegionId() == 13107){
+             //println("Region ID" + player.getCoordinate().getRegionId());
+             return random.nextLong(3000,5000);
+         }
+         else
+         {
+
+             println("Region ID" + player.getCoordinate().getRegionId());
+             println("Not in correct Region");
+             boolean hasSandSeed = Backpack.contains("Mystical sand seed");
+             if(hasSandSeed)
+             {
+                 println("Found Sand Seed");
+                 ActionBar.useItem("Mystical sand seed", "Plant");
+                 println("Planed seed");
+
+             }
+
          }
 
-        SceneObject CommonGem = SceneObjectQuery.newQuery().name("Common gem rock").option("Mine").id(113036).results().nearest();
-        if (CommonGem != null) {
-            println("Interacted CommonGem: " + CommonGem.interact("Mine"));
+        if (Skills.MINING.getLevel() <= 20) {
+            SceneObject CommonGem = SceneObjectQuery.newQuery().name("Common gem rock").option("Mine").id(113036).results().nearest();
+            if (CommonGem != null) {
+                println("Interacted CommonGem: " + CommonGem.interact("Mine"));
+            }
         }
-
+        else
+        {
+            SceneObject UncommonGem = SceneObjectQuery.newQuery().name("Uncommon gem rock").option("Mine").results().nearest();
+            if (UncommonGem != null) {
+                println("Interacted UnommonGem: " + UncommonGem.interact("Mine"));
+            }
+        }
         return random.nextLong(1500,3000);
     }
 
- /*   public int getAdditionalWoodboxCapacity() {
-        int level = Skills.WOODCUTTING.getActualLevel();
-        for (int threshold = 95; threshold > 0; threshold -= 10) {
-            if (level >= threshold)
-                return threshold + 5;
-        }
-        return 0;
-    } */
-
- /*   public int getBaseWoodboxCapacity(String woodboxName) {
-        switch (woodboxName) {
-            case "Wood box":
-                return 70;
-            case "Oak wood box":
-                return 80;
-            case "Willow wood box":
-                return 90;
-            case "Teak wood box":
-                return 100;
-            case "Maple wood box":
-                return 110;
-            case "Acadia wood box":
-                return 120;
-            case "Mahogany wood box":
-                return 130;
-            case "Yew wood box":
-                return 140;
-            case "Magic wood box":
-                return 150;
-            case "Elder wood box":
-                return 160;
-        }
-        return 0;
-    }
-*/
     public BotState getBotState() {
         return botState;
     }
