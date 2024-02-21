@@ -156,7 +156,6 @@ public class CraftingScript extends LoopingScript {
         {
             println("Bank is open");
             Bank.depositAllExcept(54004);
-            Bank.close();
             botState = BotState.SKILLING;
         }
         if (player.getCoordinate().getRegionId() != 13105)
@@ -177,7 +176,6 @@ public class CraftingScript extends LoopingScript {
                     println("Yay, we found our bank.");
                     println("Interacted bank: " + bank.interact("Bank"));
                     Bank.depositAllExcept(54004);
-                    Bank.close();
                 }
             }
         }
@@ -185,6 +183,26 @@ public class CraftingScript extends LoopingScript {
         return random.nextLong(1500,3000);
     }
 
+    private long GemMining(LocalPlayer player)
+    {
+        if (Skills.MINING.getLevel() <20)
+        {
+            SceneObject CommonGem = SceneObjectQuery.newQuery().name("Common gem rock").option("Mine").results().random();
+            if (CommonGem != null) {
+
+                println("Interacted CommonGem: " + CommonGem.interact("Mine"));
+            }
+        }
+        if (Skills.MINING.getLevel() >=20)
+        {
+            SceneObject UncommonGem = SceneObjectQuery.newQuery().name("Uncommon gem rock").option("Mine").results().random();
+            if (UncommonGem != null) {
+
+                println("Interacted CommonGem: " + UncommonGem.interact("Mine"));
+            }
+        }
+        return random.nextLong(1500,3000);
+    }
 
     private long handleSkilling(LocalPlayer player) {
          if (Interfaces.isOpen(1251))
@@ -197,12 +215,19 @@ public class CraftingScript extends LoopingScript {
          }
         println("Player moving:" +player.isMoving());
         println("Animation ID: " +  player.getAnimationId());
-       // println("Region ID" + player.getCoordinate().getRegionId());
+        println("Region ID" + player.getCoordinate().getRegionId());
+        if (player.getAnimationId() == 32541)
+        {
+            println("StamFix");
+            GemMining(player);
+
+        }
+        println("Region ID Test" + player.getCoordinate().getRegionId());
          if (player.getAnimationId() != -1 || player.isMoving() && player.getCoordinate().getRegionId() == 13107){
              //println("Region ID" + player.getCoordinate().getRegionId());
              return random.nextLong(3000,5000);
          }
-         else
+         if (player.getAnimationId() != -1 || player.isMoving() && player.getCoordinate().getRegionId() != 13107)
          {
 
              println("Region ID" + player.getCoordinate().getRegionId());
@@ -212,25 +237,14 @@ public class CraftingScript extends LoopingScript {
              {
                  println("Found Sand Seed");
                  ActionBar.useItem("Mystical sand seed", "Plant");
-                 println("Planed seed");
-
+                 println("Planted seed");
+                 return random.nextLong(1500,3000);
              }
 
          }
+        GemMining(player);
 
-        if (Skills.MINING.getLevel() <= 20) {
-            SceneObject CommonGem = SceneObjectQuery.newQuery().name("Common gem rock").option("Mine").id(113036).results().nearest();
-            if (CommonGem != null) {
-                println("Interacted CommonGem: " + CommonGem.interact("Mine"));
-            }
-        }
-        else
-        {
-            SceneObject UncommonGem = SceneObjectQuery.newQuery().name("Uncommon gem rock").option("Mine").results().nearest();
-            if (UncommonGem != null) {
-                println("Interacted UnommonGem: " + UncommonGem.interact("Mine"));
-            }
-        }
+
         return random.nextLong(1500,3000);
     }
 
