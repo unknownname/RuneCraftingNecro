@@ -46,7 +46,7 @@ public class CraftingScriptGraphicsContext extends ScriptGraphicsContext {
                     ImGui.EndTabItem();
                 }
                 if (ImGui.BeginTabItem("Config", ImGuiWindowFlag.None.getValue())) {
-                    ImGui.Text("Please configure unlock Available:");
+                    ImGui.Text("Please configure Available unlock:");
                     script.setSomeBool(ImGui.Checkbox("War's Retreat Teleport", script.isSomeBool()));
                     ImGui.EndTabItem();
                 }
