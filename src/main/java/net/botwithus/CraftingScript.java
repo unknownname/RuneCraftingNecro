@@ -14,11 +14,13 @@ import net.botwithus.rs3.game.Item;
 import net.botwithus.rs3.game.actionbar.ActionBar;
 import net.botwithus.rs3.game.hud.interfaces.Component;
 import net.botwithus.rs3.game.hud.interfaces.Interfaces;
+import net.botwithus.rs3.game.js5.types.HeadbarType;
 import net.botwithus.rs3.game.queries.builders.ItemQuery;
 import net.botwithus.rs3.game.queries.builders.components.ComponentQuery;
 import net.botwithus.rs3.game.queries.builders.items.InventoryItemQuery;
 import net.botwithus.rs3.game.queries.builders.objects.SceneObjectQuery;
 import net.botwithus.rs3.game.queries.results.ResultSet;
+import net.botwithus.rs3.game.scene.entities.characters.Headbar;
 import net.botwithus.rs3.game.scene.entities.characters.player.LocalPlayer;
 import net.botwithus.rs3.game.scene.entities.object.SceneObject;
 import net.botwithus.rs3.game.skills.Skills;
@@ -40,6 +42,8 @@ public class CraftingScript extends LoopingScript {
     private BotState botState = BotState.IDLE;
     private boolean someBool = true;
     private Random random = new Random();
+
+
     private Area AlKharid = new Area.Rectangular(new Coordinate(3274,3168,0), new Coordinate(3267,3171,0));
     private Area AlKharid1 = new Area.Rectangular(new Coordinate(3301,3284,0), new Coordinate(3306,3274,0));
     private Area AlKharid2 = new Area.Rectangular(new Coordinate(3301,3241,0), new Coordinate(3306,3231,0));
@@ -267,8 +271,12 @@ public class CraftingScript extends LoopingScript {
         println("Player moving:" +player.isMoving());
         println("Animation ID: " +  player.getAnimationId());
         println("Region ID" + player.getCoordinate().getRegionId());
-        if (player.getAnimationId() == 32541 || player.getAnimationId() == 32553 )
+        //println("Head Bar Value" + player.getHeadbars());
+        println("Stam ID value" +player.getHeadbars().get(0).getId());
+        println("Stam Width value" +player.getHeadbars().get(0).getWidth());
+        if (player.getHeadbars().get(0).getId() == 5 && player.getHeadbars().get(0).getWidth() <= random.nextInt(100) )
         {
+
             println("StamFix");
             GemMining(player);
 
