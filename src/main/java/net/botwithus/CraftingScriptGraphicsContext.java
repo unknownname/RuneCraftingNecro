@@ -22,11 +22,11 @@ public class CraftingScriptGraphicsContext extends ScriptGraphicsContext {
 
     @Override
     public void drawSettings() {
-        if (ImGui.Begin("Crafting", ImGuiWindowFlag.None.getValue())) {
+        if (ImGui.Begin("Gem Mining", ImGuiWindowFlag.None.getValue())) {
             if (ImGui.BeginTabBar("Bar", ImGuiWindowFlag.None.getValue())) {
-                if (ImGui.BeginTabItem("Settings", ImGuiWindowFlag.None.getValue())) {
-                    ImGui.Text("Welcome to my script!");
-                    ImGui.Text("My scripts state is: " + script.getBotState());
+                if (ImGui.BeginTabItem("Play", ImGuiWindowFlag.None.getValue())) {
+                    ImGui.Text("Welcome to Al Kharid Mining Script");
+                    ImGui.Text("Scripts state is: " + script.getBotState());
                     if (ImGui.Button("Start")) {
                         //button has been clicked
                         script.setBotState(CraftingScript.BotState.SKILLING);
@@ -38,16 +38,16 @@ public class CraftingScriptGraphicsContext extends ScriptGraphicsContext {
                     }
                     ImGui.EndTabItem();
                 }
-                if (ImGui.BeginTabItem("Stat", ImGuiWindowFlag.None.getValue())) {
+                if (ImGui.BeginTabItem("Stats", ImGuiWindowFlag.None.getValue())) {
                     ImGui.Text("Mining");
-                    ImGui.Text("Mining Level" + Skills.MINING.getLevel());
-                    ImGui.Text("Remaining XP to Next level" + Skills.MINING.getExperienceToNextLevel());
-                    //script.setSomeBool(ImGui.Checkbox("Are you cool?", script.isSomeBool()));
+                    ImGui.Text("Mining Level: " + Skills.MINING.getLevel());
+                    ImGui.Text("Remaining XP to Next level: " + Skills.MINING.getExperienceToNextLevel());
+
                     ImGui.EndTabItem();
                 }
-                if (ImGui.BeginTabItem("More", ImGuiWindowFlag.None.getValue())) {
-                    ImGui.Text("More");
-                    script.setSomeBool(ImGui.Checkbox("Are you cool?", script.isSomeBool()));
+                if (ImGui.BeginTabItem("Config", ImGuiWindowFlag.None.getValue())) {
+                    ImGui.Text("Please configure unlock Available:");
+                    script.setSomeBool(ImGui.Checkbox("War's Retreat Teleport", script.isSomeBool()));
                     ImGui.EndTabItem();
                 }
                 ImGui.EndTabBar();

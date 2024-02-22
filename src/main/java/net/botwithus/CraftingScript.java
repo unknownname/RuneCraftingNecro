@@ -2,9 +2,11 @@ package net.botwithus;
 
 import net.botwithus.api.game.hud.inventories.Backpack;
 import net.botwithus.api.game.hud.inventories.Bank;
+import net.botwithus.api.game.hud.traversal.Lodestone;
 import net.botwithus.internal.scripts.ScriptDefinition;
 import net.botwithus.rs3.events.impl.ChatMessageEvent;
 import net.botwithus.rs3.events.impl.ServerTickedEvent;
+import net.botwithus.rs3.events.impl.SkillUpdateEvent;
 import net.botwithus.rs3.game.Area;
 import net.botwithus.rs3.game.Client;
 import net.botwithus.rs3.game.Coordinate;
@@ -44,6 +46,7 @@ public class CraftingScript extends LoopingScript {
     private Area AlKharid3 = new Area.Rectangular(new Coordinate(3301,3206,0), new Coordinate(3304,3197,0));
     private Area AlKharid4 = new Area.Rectangular(new Coordinate(3289,3181,0), new Coordinate(3295,3181,0));
 
+
     enum BotState {
         //define your own states here
         IDLE,
@@ -78,10 +81,18 @@ public class CraftingScript extends LoopingScript {
             case SKILLING -> {
                 //do some code that handles your skilling
                 Execution.delay(handleSkilling(player));
+
             }
             case BANKING -> {
-                //handle your banking logic, etc
-                Execution.delay(handleBanking(player));
+                //handle your banking logic, etc\
+                if (someBool == true)
+                {
+                    Execution.delay(teleportbanking(player));
+                }
+                else
+                {
+                    Execution.delay(handleBanking(player));
+                }
             }
         }
     }
@@ -121,7 +132,7 @@ public class CraftingScript extends LoopingScript {
         });
         Coordinate AlKharid4Random= AlKharid4.getRandomCoordinate();
         Travel.walkTo(AlKharid4Random.getX(), AlKharid4Random.getY());
-        Execution.delayUntil(20000,() -> {
+        Execution.delayUntil(10000,() -> {
 
             assert player != null;
             return AlKharid4.contains(player.getCoordinate());
@@ -146,6 +157,7 @@ public class CraftingScript extends LoopingScript {
 
     private long handleBanking(LocalPlayer player)
     {
+        println("War Unlock state" + someBool);
         println("Player moving 1:" +player.isMoving());
 
         if(player.isMoving())
@@ -182,6 +194,44 @@ public class CraftingScript extends LoopingScript {
 
         return random.nextLong(1500,3000);
     }
+    private long teleportbanking(LocalPlayer player)
+    {
+        println("War Unlock state" + someBool);
+        println("Teleport to War Retreat Area");
+        println("Player moving 1:" +player.isMoving());
+       // ActionBar.useAbility("War's Retreat Teleport");
+        if(player.isMoving())
+        {
+            return random.nextLong(3000,5000);
+        }
+        if (Bank.isOpen())
+        {
+            println("Bank is open");
+            Bank.depositAllExcept(54004);
+            botState = BotState.SKILLING;
+        }
+        if (player.getCoordinate().getRegionId() != 13214)
+        {
+            ActionBar.useAbility("War's Retreat Teleport");
+            Execution.delayUntil( 10000, () -> player.getCoordinate().getRegionId() ==13214);
+            if (player.getCoordinate().getRegionId() == 13214)
+            {
+                println("War's Teleport Successful");
+            }
+            return random.nextLong(1000,2000);
+        }
+        else
+        {
+            SceneObject bankChest = SceneObjectQuery.newQuery().name("Bank chest").results().nearest();
+            if (bankChest != null)
+            {
+
+                println("Interact with War Bank: " + bankChest.interact("Use"));
+                Bank.depositAllExcept(54004);
+            }
+        }
+        return random.nextLong(2000,3000);
+    }
 
     private long GemMining(LocalPlayer player)
     {
@@ -191,6 +241,7 @@ public class CraftingScript extends LoopingScript {
             if (CommonGem != null) {
 
                 println("Interacted CommonGem: " + CommonGem.interact("Mine"));
+
             }
         }
         if (Skills.MINING.getLevel() >=20)
@@ -216,18 +267,19 @@ public class CraftingScript extends LoopingScript {
         println("Player moving:" +player.isMoving());
         println("Animation ID: " +  player.getAnimationId());
         println("Region ID" + player.getCoordinate().getRegionId());
-        if (player.getAnimationId() == 32541)
+        if (player.getAnimationId() == 32541 || player.getAnimationId() == 32553 )
         {
             println("StamFix");
             GemMining(player);
 
         }
-        println("Region ID Test" + player.getCoordinate().getRegionId());
+
          if (player.getAnimationId() != -1 || player.isMoving() && player.getCoordinate().getRegionId() == 13107){
              //println("Region ID" + player.getCoordinate().getRegionId());
+             println("Region ID Test" + player.getCoordinate().getRegionId());
              return random.nextLong(3000,5000);
          }
-         if (player.getAnimationId() != -1 || player.isMoving() && player.getCoordinate().getRegionId() != 13107)
+         if (player.getAnimationId() == -1 && player.getCoordinate().getRegionId() != 13107)
          {
 
              println("Region ID" + player.getCoordinate().getRegionId());
@@ -263,4 +315,25 @@ public class CraftingScript extends LoopingScript {
     public void setSomeBool(boolean someBool) {
         this.someBool = someBool;
     }
+
+ /*   private int xpGained()
+    {
+        xpPerHour = (int) (Math.round((3600.0 / currenttime) * xpGained()))
+
+        subscribe(SkillUpdateEvent.class, skillUpdateEvent ->
+        {
+            if(skillUpdateEvent.getId() == Skills.MINING.getId())
+            {
+                xpGained += (skillUpdateEvent.getExperience() - skillUpdateEvent.getOldExperience());
+                if (skillUpdateEvent.getOldExperience() < skillUpdateEvent.getActualLevel());
+                levelsGained++;
+            }
+        });
+
+        return xpGained();
+    }
+*/
+
+
+
 }
