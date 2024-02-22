@@ -231,7 +231,9 @@ public class CraftingScript extends LoopingScript {
             {
 
                 println("Interact with War Bank: " + bankChest.interact("Use"));
-                Bank.depositAllExcept(54004);
+                return random.nextLong(1000,3000);
+                //Bank.depositAllExcept(54004);
+
             }
         }
         return random.nextLong(2000,3000);
@@ -253,7 +255,7 @@ public class CraftingScript extends LoopingScript {
             SceneObject UncommonGem = SceneObjectQuery.newQuery().name("Uncommon gem rock").option("Mine").results().random();
             if (UncommonGem != null) {
 
-                println("Interacted CommonGem: " + UncommonGem.interact("Mine"));
+                println("Interacted UnCommonGem: " + UncommonGem.interact("Mine"));
             }
         }
         return random.nextLong(1500,3000);
@@ -274,7 +276,7 @@ public class CraftingScript extends LoopingScript {
         //println("Head Bar Value" + player.getHeadbars());
         println("Stam ID value" +player.getHeadbars().get(0).getId());
         println("Stam Width value" +player.getHeadbars().get(0).getWidth());
-        if (player.getHeadbars().get(0).getId() == 5 && player.getHeadbars().get(0).getWidth() <= random.nextInt(100) )
+        if (player.getHeadbars().get(0).getId() == 5 && player.getHeadbars().get(0).getWidth() < random.nextInt(100) )
         {
 
             println("StamFix");
