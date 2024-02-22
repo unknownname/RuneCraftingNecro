@@ -22,10 +22,10 @@ public class SummoningScriptGraphicsContext extends ScriptGraphicsContext {
 
     @Override
     public void drawSettings() {
-        if (ImGui.Begin("Gem Mining", ImGuiWindowFlag.None.getValue())) {
+        if (ImGui.Begin("Summoning", ImGuiWindowFlag.None.getValue())) {
             if (ImGui.BeginTabBar("Bar", ImGuiWindowFlag.None.getValue())) {
                 if (ImGui.BeginTabItem("Play", ImGuiWindowFlag.None.getValue())) {
-                    ImGui.Text("Welcome to Al Kharid Mining Script");
+                    ImGui.Text("Welcome to Pouch Crafting Script");
                     ImGui.Text("Scripts state is: " + script.getBotState());
                     if (ImGui.Button("Start")) {
                         //button has been clicked
@@ -39,15 +39,17 @@ public class SummoningScriptGraphicsContext extends ScriptGraphicsContext {
                     ImGui.EndTabItem();
                 }
                 if (ImGui.BeginTabItem("Stats", ImGuiWindowFlag.None.getValue())) {
-                    ImGui.Text("Mining");
-                    ImGui.Text("Mining Level: " + Skills.MINING.getLevel());
-                    ImGui.Text("Remaining XP to Next level: " + Skills.MINING.getExperienceToNextLevel());
+                    ImGui.Text("Summoning");
+                    ImGui.Text("Summoning Level: " + Skills.SUMMONING.getLevel());
+                    ImGui.Text("Remaining XP to Next level: " + Skills.SUMMONING.getExperienceToNextLevel());
 
                     ImGui.EndTabItem();
                 }
                 if (ImGui.BeginTabItem("Config", ImGuiWindowFlag.None.getValue())) {
-                    ImGui.Text("Please configure Available unlock:");
-                    script.setSomeBool(ImGui.Checkbox("War's Retreat Teleport", script.isSomeBool()));
+                    ImGui.Text("Please Select Summoning Area");
+                    script.setSomeBool(ImGui.Checkbox("Taverley", script.isSomeBool()));
+                    script.setSomeBool1(ImGui.Checkbox("Menaphos", script.isSomeBool1()));
+                    script.setSomeBool2(ImGui.Checkbox("Priff", script.isSomeBool2()));
                     ImGui.EndTabItem();
                 }
                 ImGui.EndTabBar();

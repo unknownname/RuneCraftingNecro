@@ -1,7 +1,6 @@
 Description
 
-    AlKhaird Gem Mining Script , with local Bank or War Retreat Teleport
-Required Items and Abilities
+    Summoning
+Required Items and Areas:
+  - Work in Progress
 
-Mystical Sand Seed in the inventory
-War Retreat Teleport - configuration setting for faster mining
