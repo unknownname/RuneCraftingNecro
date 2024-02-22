@@ -1,2 +1,2 @@
-rootProject.name = "GemMining"
+rootProject.name = "Summoning"
 
