@@ -1,54 +1,30 @@
 package net.botwithus;
 
-import net.botwithus.api.game.Items;
-import net.botwithus.api.game.hud.Dialog;
 import net.botwithus.api.game.hud.inventories.Backpack;
-import net.botwithus.api.game.hud.inventories.BackpackInventory;
 import net.botwithus.api.game.hud.inventories.Bank;
-import net.botwithus.api.game.hud.inventories.BankInventory;
-import net.botwithus.api.game.hud.traversal.Lodestone;
 import net.botwithus.internal.scripts.ScriptDefinition;
-import net.botwithus.rs3.events.impl.ChatMessageEvent;
-import net.botwithus.rs3.events.impl.InventoryUpdateEvent;
-import net.botwithus.rs3.events.impl.ServerTickedEvent;
-import net.botwithus.rs3.events.impl.SkillUpdateEvent;
 import net.botwithus.rs3.game.Area;
 import net.botwithus.rs3.game.Client;
 import net.botwithus.rs3.game.Coordinate;
 import net.botwithus.rs3.game.Item;
 import net.botwithus.rs3.game.actionbar.ActionBar;
-import net.botwithus.rs3.game.hud.interfaces.Component;
 import net.botwithus.rs3.game.hud.interfaces.Interfaces;
-import net.botwithus.rs3.game.js5.types.HeadbarType;
-import net.botwithus.rs3.game.js5.types.InventoryType;
-import net.botwithus.rs3.game.minimenu.MiniMenu;
-import net.botwithus.rs3.game.minimenu.actions.ComponentAction;
-import net.botwithus.rs3.game.minimenu.actions.MiniMenuAction;
-import net.botwithus.rs3.game.queries.builders.ItemQuery;
-import net.botwithus.rs3.game.queries.builders.components.ComponentQuery;
 import net.botwithus.rs3.game.queries.builders.items.InventoryItemQuery;
 import net.botwithus.rs3.game.queries.builders.objects.SceneObjectQuery;
 import net.botwithus.rs3.game.queries.results.ResultSet;
-import net.botwithus.rs3.game.scene.entities.characters.Headbar;
 import net.botwithus.rs3.game.scene.entities.characters.player.LocalPlayer;
 import net.botwithus.rs3.game.scene.entities.object.SceneObject;
-import net.botwithus.rs3.game.skills.Skills;
+import net.botwithus.rs3.game.vars.VarManager;
 import net.botwithus.rs3.imgui.ImGui;
 import net.botwithus.rs3.imgui.NativeInteger;
 import net.botwithus.rs3.script.Execution;
 import net.botwithus.rs3.script.LoopingScript;
 import net.botwithus.rs3.script.config.ScriptConfig;
 import net.botwithus.rs3.util.Regex;
-import net.botwithus.rs3.game.*;
 
 
-import javax.swing.*;
-import javax.swing.plaf.basic.BasicInternalFrameTitlePane;
 import java.time.Instant;
 import java.util.Random;
-import java.util.function.Function;
-import java.util.random.RandomGenerator;
-import java.util.random.RandomGeneratorFactory;
 import java.util.regex.Pattern;
 
 public class RunecraftingScript extends LoopingScript {
@@ -120,12 +96,24 @@ public class RunecraftingScript extends LoopingScript {
                 Execution.delay(handleSkilling(player));
                 //println("Selected Rune" + currentItem);
                 println("Selected Rune" + options[currentItem]);
-                //Execution.delay(handleSkillingMenaphos(player));
+
+
+                //println("Small Pouch Large" +VarManager.getVarbitValue(16499));
+                //println("Small Pouch Gaint" +VarManager.getVarbitValue(16500));
+                //println("Small Pouch Medium" +VarManager.getVarbitValue(16498));
+                //println("Small Pouch Small" +VarManager.getVarbitValue(16497));
+                //checkRunePouchesAndHandleBanking(player);
+                //println("Small Pouch Empty" +VarManager.getVarbitValue(3218));
+                //println("Small  Var Domain" + VarManager.getVarDomain(3214));
+                //println("Small  Var Fill1" + VarManager.getVarValue(VarDomainType.PLAYER,3214));
+                //println("Small  Var Empty2" + VarManager.getVarValue(VarDomainType.PLAYER,3215));
+
+
             }
             case BANKING -> {
                 //handle your banking logic, etc\
                 Execution.delay(handleBanking(player));
-                //Execution.delay(handleBankingMenaphos(player));
+
             }
         }
 
@@ -140,7 +128,7 @@ public class RunecraftingScript extends LoopingScript {
 
     }
 
-    private long handleBanking(LocalPlayer player)  // Taverley Banking//
+    private long handleBanking(LocalPlayer player)
     {
         println("Player moving 1:" +player.isMoving());
 
@@ -203,7 +191,7 @@ public class RunecraftingScript extends LoopingScript {
              return random.nextLong(150,3000);
 
 
-         if (!Backpack.containsAllOf("Impure essence"))
+         if (!Backpack.containsAllOf("Impure essence") && !checkRunePouchesAndHandleBanking())
          {
 
              println("Going to banking state");
@@ -211,7 +199,8 @@ public class RunecraftingScript extends LoopingScript {
              //Execution.delayUntil(3000, () -> !Interfaces.isOpen(1251));
              return random.nextLong(1500,3000);
          }
-        println("Player moving:" +player.isMoving());
+
+         println("Player moving:" +player.isMoving());
         println("Player Animation ID :" +player.getAnimationId());
         println("Region ID Before Portal Check" + player.getCoordinate().getRegionId());
         println("Direction 1: " + player.getDirection1());
@@ -265,6 +254,68 @@ public class RunecraftingScript extends LoopingScript {
 
 
         return random.nextLong(1500,3000);
+    }
+
+
+    public boolean checkRunePouchesAndHandleBanking()
+    {
+
+
+        InventoryItemQuery runePouchQuery = InventoryItemQuery.newQuery().ids(5514,5509,5510,5512);
+        ResultSet<Item> runePouches = runePouchQuery.results();
+        boolean hasRunes = false;
+
+        if(!runePouches.isEmpty())
+        {
+            for (Item pouch : runePouches)
+            {
+                boolean containsRunes = checkPouchForRunes(pouch, 55667);
+                if(containsRunes)
+                {
+                    println("Rune pouch contains runes");
+                }
+                else
+                {
+                    println("Pouch contains no runes");
+                }
+            }
+
+        }
+        println("No rune pouch founded in the inventory");
+        return false;
+
+    }
+
+    private boolean isRunePouch(Item item)
+    {
+        InventoryItemQuery pouch = InventoryItemQuery.newQuery().ids(5514);
+        if (Backpack.contains(5514)) {
+
+            println("There is rune pouch in the inventory");
+            return true;
+        }
+
+        return false;
+    }
+
+    private boolean checkPouchForRunes (Item pouch, int i)
+    {
+        //int GaintPouchVarbitID =16500;
+        //ResultSet<Item> GaintRunePouch = InventoryItemQuery.newQuery().ids(5514).results();
+        int SmallPouchValue = VarManager.getVarbitValue(16497);
+        int MediumPouchValue = VarManager.getVarbitValue(16498);
+        int LargePouchValue = VarManager.getVarbitValue(16499);
+        int GaintPouchValue = VarManager.getVarbitValue(16500);
+        if (GaintPouchValue > 0 && SmallPouchValue >0 && MediumPouchValue >0 && LargePouchValue >0)
+        {
+            println("The Small rune pouch contains runes:"  + VarManager.getVarbitValue(16497));
+            println("The Medium rune pouch contains runes:"  + VarManager.getVarbitValue(16498));
+            println("The Large rune pouch contains runes:"  + VarManager.getVarbitValue(16499));
+            println("The Gaint rune pouch contains runes:"  + VarManager.getVarbitValue(16500));
+            return true;
+        }
+        return false;
+
     }
 
 
