@@ -3,10 +3,8 @@ package net.botwithus;
 import net.botwithus.api.game.hud.inventories.Backpack;
 import net.botwithus.api.game.hud.inventories.Bank;
 import net.botwithus.internal.scripts.ScriptDefinition;
-import net.botwithus.rs3.game.Area;
-import net.botwithus.rs3.game.Client;
-import net.botwithus.rs3.game.Coordinate;
-import net.botwithus.rs3.game.Item;
+import net.botwithus.rs3.events.impl.InventoryUpdateEvent;
+import net.botwithus.rs3.game.*;
 import net.botwithus.rs3.game.actionbar.ActionBar;
 import net.botwithus.rs3.game.hud.interfaces.Interfaces;
 import net.botwithus.rs3.game.queries.builders.items.InventoryItemQuery;
@@ -19,11 +17,13 @@ import net.botwithus.rs3.imgui.ImGui;
 import net.botwithus.rs3.imgui.NativeInteger;
 import net.botwithus.rs3.script.Execution;
 import net.botwithus.rs3.script.LoopingScript;
+import net.botwithus.rs3.script.Script;
 import net.botwithus.rs3.script.config.ScriptConfig;
 import net.botwithus.rs3.util.Regex;
 
 
 import java.time.Instant;
+import java.util.Objects;
 import java.util.Random;
 import java.util.regex.Pattern;
 
@@ -34,11 +34,14 @@ public class RunecraftingScript extends LoopingScript {
 
     private Random random = new Random();
     private Pattern Impure = Regex.getPatternForContainingOneOf("Impure Essesnce", "Impure essence");
-    private Instant scriptStartTime;
+    private Pattern NumberofRunes = Regex.getPatternForContainingOneOf("rune");
+    //public long scriptStartTime;
+    public long scriptStartTime = System.currentTimeMillis();
     //NativeInteger currentItem = new NativeInteger(0);
     String[] options = {"Spirit","Bone","Flesh","Miasma"};
     private int currentItem = 0;
-
+    public int numberofrunecrated  = 0;
+    public int runeperhour = 0;
 
     // public int getStartingRunecraftingLevel()
     //{
@@ -54,7 +57,12 @@ public class RunecraftingScript extends LoopingScript {
             println("Rune Selected" + options[currentItem]);
         }
     }
-
+    enum Runes{
+        Spirit,
+        Bone,
+        Flesh,
+        Miasma;
+    }
 
     private Area TaverleyArea = new Area.Rectangular(new Coordinate(2917,3427,0), new Coordinate(2925,3433,0));
 
@@ -70,6 +78,10 @@ public class RunecraftingScript extends LoopingScript {
     public RunecraftingScript(String s, ScriptConfig scriptConfig, ScriptDefinition scriptDefinition) {
         super(s, scriptConfig, scriptDefinition);
         this.sgc = new RunecraftingScriptGraphicsContext(getConsole(), this);
+
+        runecrafted();
+
+        //updatestatis();
     }
 
     @Override
@@ -82,7 +94,6 @@ public class RunecraftingScript extends LoopingScript {
             Execution.delay(random.nextLong(3000,7000));
             return;
         }
-
         switch (botState) {
             case IDLE -> {
                 //do nothing
@@ -92,12 +103,11 @@ public class RunecraftingScript extends LoopingScript {
             case SKILLING -> {
                 //do some code that handles your skilling
                 //Execution.delay(regionIDFinder(player));
-                scriptStartTime = Instant.now();
+                //scriptStartTime = System.currentTimeMillis();
                 Execution.delay(handleSkilling(player));
                 //println("Selected Rune" + currentItem);
-                println("Selected Rune" + options[currentItem]);
-
-
+                //runecrafted();
+                //println("Selected Rune" + options[currentItem]);
                 //println("Small Pouch Large" +VarManager.getVarbitValue(16499));
                 //println("Small Pouch Gaint" +VarManager.getVarbitValue(16500));
                 //println("Small Pouch Medium" +VarManager.getVarbitValue(16498));
@@ -107,17 +117,12 @@ public class RunecraftingScript extends LoopingScript {
                 //println("Small  Var Domain" + VarManager.getVarDomain(3214));
                 //println("Small  Var Fill1" + VarManager.getVarValue(VarDomainType.PLAYER,3214));
                 //println("Small  Var Empty2" + VarManager.getVarValue(VarDomainType.PLAYER,3215));
-
-
             }
             case BANKING -> {
                 //handle your banking logic, etc\
                 Execution.delay(handleBanking(player));
-
             }
         }
-
-
     }
 
     private long regionIDFinder(LocalPlayer player)
@@ -125,6 +130,34 @@ public class RunecraftingScript extends LoopingScript {
 
         println("Region ID" + player.getCoordinate().getRegionId());
         return random.nextLong(1500,3000);
+
+    }
+    public void runecrafted()
+    {
+        subscribe(InventoryUpdateEvent.class, inventoryUpdateEvent -> {
+            Item item = inventoryUpdateEvent.getNewItem();
+            //println("New Item in Inventory: " + item);
+            if (item != null) {
+                if (item.getInventoryType().getId() != 93) {
+                    return;
+                }
+                String runeName = item.getName();
+                //println("Rune Name:" + runeName);
+                if (runeName != null) {
+                    if (runeName.equalsIgnoreCase(options[currentItem] + " rune")) {
+                        numberofrunecrated = numberofrunecrated + item.getStackSize();
+                        println("Number of Runes Crafted: " + options[currentItem] + "Rune: " + numberofrunecrated);
+                        //println("Number of items crated" + numberofrunecrated);
+                        //equalsIgnoreCase(options[currentItem]
+                    }
+                }
+
+            }
+            long currenttime = (System.currentTimeMillis() - scriptStartTime) /1000;
+            runeperhour = (int)(Math.round(3600.0 / currenttime * numberofrunecrated));
+            println(" Runes per Hour" + runeperhour);
+
+        });
 
     }
 
@@ -183,9 +216,6 @@ public class RunecraftingScript extends LoopingScript {
 
         return random.nextLong(1500,3000);
     }
-
-
-
     private long handleSkilling(LocalPlayer player) {
          if (Interfaces.isOpen(1251))
              return random.nextLong(150,3000);
@@ -288,8 +318,8 @@ public class RunecraftingScript extends LoopingScript {
 
     private boolean isRunePouch(Item item)
     {
-        InventoryItemQuery pouch = InventoryItemQuery.newQuery().ids(5514);
-        if (Backpack.contains(5514)) {
+        InventoryItemQuery pouch = InventoryItemQuery.newQuery().ids(5514,5509,5510,5512);
+        if (Backpack.contains(5514,5509,5510,5512)) {
 
             println("There is rune pouch in the inventory");
             return true;
@@ -330,6 +360,8 @@ public class RunecraftingScript extends LoopingScript {
     public boolean isSomeBool() {
         return someBool;
     }
+
+
 
     public void setSomeBool(boolean someBool) {
         this.someBool = someBool;

@@ -1,21 +1,14 @@
 package net.botwithus;
 
-import net.botwithus.api.game.hud.inventories.Bank;
-import net.botwithus.rs3.events.impl.SkillUpdateEvent;
-import net.botwithus.rs3.game.Client;
-import net.botwithus.rs3.game.skills.Skill;
+import net.botwithus.rs3.events.impl.InventoryUpdateEvent;
 import net.botwithus.rs3.imgui.ImGui;
 import net.botwithus.rs3.imgui.ImGuiWindowFlag;
-import net.botwithus.rs3.imgui.NativeInteger;
 import net.botwithus.rs3.script.ScriptConsole;
 import net.botwithus.rs3.script.ScriptGraphicsContext;
 import net.botwithus.rs3.game.skills.Skills;
-import net.botwithus.rs3.game.scene.entities.characters.player.LocalPlayer;
-import net.botwithus.rs3.util.Regex;
 
 
-import java.util.regex.Pattern;
-import java.util.*;
+import java.util.concurrent.atomic.AtomicInteger;
 
 
 public class RunecraftingScriptGraphicsContext extends ScriptGraphicsContext {
@@ -47,6 +40,11 @@ public class RunecraftingScriptGraphicsContext extends ScriptGraphicsContext {
             //ImGui.Text("Content of Tab 1");
             //String[] items = {"Spirit","Bone","Flesh","Miasma"};
             //int[] currentItem = {0};
+            long elapsedTimeMillis = System.currentTimeMillis() - scriptstartTime;
+            long elapsedSeconds = elapsedTimeMillis / 1000;
+            long hours = elapsedSeconds / 3600;
+            long minutes = (elapsedSeconds % 3600) / 60;
+            long seconds = elapsedSeconds % 60;
 
             if (ImGui.BeginTabBar("Bar", ImGuiWindowFlag.None.getValue())) {
                 if (ImGui.BeginTabItem("Play", ImGuiWindowFlag.None.getValue())) {
@@ -67,6 +65,8 @@ public class RunecraftingScriptGraphicsContext extends ScriptGraphicsContext {
                     ImGui.EndTabItem();
                 }
                 if (ImGui.BeginTabItem("Stats", ImGuiWindowFlag.None.getValue())) {
+                    String displayTimeRunning = String.format("%02d:%02d:%02d", hours, minutes, seconds);
+                    ImGui.SeparatorText("Time Running  " + displayTimeRunning);
                     ImGui.Text("RuneCrafting");
                     ImGui.Text("Current RuneCrafting Level: " + Skills.RUNECRAFTING.getLevel());
                     displayXPGained(Skills.RUNECRAFTING);
@@ -74,6 +74,12 @@ public class RunecraftingScriptGraphicsContext extends ScriptGraphicsContext {
                     XPtillNextLevel(Skills.RUNECRAFTING);
                     String timetolevel = calculateTimeTillNextLevel();
                     ImGui.Text(timetolevel);
+                    ImGui.Separator();
+                    ImGui.Text("Number of Runes: " + script.numberofrunecrated );
+                    //ImGui.Separator();
+                    ImGui.Text("Crafted Runes Per Hour: " + script.runeperhour);
+                    ImGui.Separator();
+
 
 
 
@@ -173,6 +179,17 @@ public class RunecraftingScriptGraphicsContext extends ScriptGraphicsContext {
         } else {
             return "Time to level: calculating...";
         }
+    }
+
+    private void displayTimeRunning() {
+        long elapsedTimeMillis = System.currentTimeMillis() - scriptstartTime;
+        long elapsedSeconds = elapsedTimeMillis / 1000;
+        long hours = elapsedSeconds / 3600;
+        long minutes = (elapsedSeconds % 3600) / 60;
+        long seconds = elapsedSeconds % 60;
+
+        String timeRunningFormatted = String.format("%02d:%02d:%02d", hours, minutes, seconds);
+        ImGui.Text(timeRunningFormatted);
     }
     @Override
     public void drawOverlay() {
