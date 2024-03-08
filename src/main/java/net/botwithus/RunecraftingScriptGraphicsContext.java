@@ -88,6 +88,7 @@ public class RunecraftingScriptGraphicsContext extends ScriptGraphicsContext {
                 if (ImGui.BeginTabItem("Config", ImGuiWindowFlag.None.getValue())) {
                     ImGui.Text("Please Choose the rune to craft");
                     script.NecroRunes();
+                    script.setBraclet(ImGui.Checkbox("Bracelet Available" , script.isBraclet()));
                     //ImGui.Combo("Runes",script.currentItem,items);
                     //ImGui.Text("Selected Rune" + items[currentItem[0]]);
                     //ImGui.Text("Selected Rune" + items[currentItem.length);

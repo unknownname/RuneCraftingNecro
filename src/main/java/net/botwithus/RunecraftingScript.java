@@ -31,6 +31,7 @@ public class RunecraftingScript extends LoopingScript {
 
     private BotState botState = BotState.IDLE;
     private boolean someBool = true;
+    private boolean Bracelet = true;
 
     private Random random = new Random();
     private Pattern Impure = Regex.getPatternForContainingOneOf("Impure Essesnce", "Impure essence");
@@ -233,55 +234,96 @@ public class RunecraftingScript extends LoopingScript {
          println("Player moving:" +player.isMoving());
         println("Player Animation ID :" +player.getAnimationId());
         println("Region ID Before Portal Check" + player.getCoordinate().getRegionId());
-        println("Direction 1: " + player.getDirection1());
-        println("Direction 1: " + player.getDirection2());
-
-
-        SceneObject Portal = SceneObjectQuery.newQuery().name("Dark portal").option("Enter").results().nearest();
-         if (Portal != null && player.getCoordinate().getRegionId() != 5150 && !player.isMoving())
-         {
-             println("Region ID After Portal Select " + player.getCoordinate().getRegionId());
-             println("Interact with portal" + Portal.interact("Enter"));
-
-             return random.nextLong(1000,2000);
-
-         }
-
-         if (player.getCoordinate().getRegionId() == 5150 && options[currentItem] == "Miasma")
+        //println("Direction 1: " + player.getDirection1());
+        //println("Direction 1: " + player.getDirection2());
+        if(Bracelet == true)
         {
-
-            SceneObject Miasma = SceneObjectQuery.newQuery().name("Miasma altar").option("Craft runes").results().nearest();
-            if(Miasma !=null )
-            {
-                println("Interact with Miasma Runes Altar" + Miasma.interact("Craft runes"));
-                Execution.delay(2000);
+            if(player.getCoordinate().getRegionId() !=4636 && player.getCoordinate().getRegionId() != 5150 ) {
+                ActionBar.useItem("Passing bracelet", 2);
             }
-         }else if (player.getCoordinate().getRegionId() == 5150 && options[currentItem] == "Spirit")
-         {
-             SceneObject Spirit = SceneObjectQuery.newQuery().name("Spirit altar").option("Craft runes").results().nearest();
-             if(Spirit !=null )
-             {
-                 println("Interact with Runes Altar" + Spirit.interact("Craft runes"));
-                 Execution.delay(2000);
-             }
-         }else if (player.getCoordinate().getRegionId() == 5150 && options[currentItem] == "Bone")
-         {
-             SceneObject Bone = SceneObjectQuery.newQuery().name("Bone altar").option("Craft runes").results().nearest();
-             if(Bone !=null )
-             {
-                 println("Interact with Bone Runes Altar" + Bone.interact("Craft runes"));
-                 Execution.delay(2000);
-             }
-         }else if (player.getCoordinate().getRegionId() == 5150 && options[currentItem] == "Flesh")
-         {
-             SceneObject Flesh = SceneObjectQuery.newQuery().name("Flesh altar").option("Craft runes").results().nearest();
-             if(Flesh !=null )
-             {
-                 println("Interact with Flesh Runes Altar" + Flesh.interact("Craft runes"));
-                 Execution.delay(2000);
-             }
-         }
+            SceneObject Portal = SceneObjectQuery.newQuery().name("Dark portal").option("Enter").results().nearest();
+            if (Portal != null && player.getCoordinate().getRegionId() != 5150 && !player.isMoving())
+            {
+                println("Region ID After Portal Select " + player.getCoordinate().getRegionId());
+                println("Interact with portal" + Portal.interact("Enter"));
 
+                return random.nextLong(1000,2000);
+
+            }
+
+            if (player.getCoordinate().getRegionId() == 5150 && options[currentItem] == "Miasma")
+            {
+
+                SceneObject Miasma = SceneObjectQuery.newQuery().name("Miasma altar").option("Craft runes").results().nearest();
+                if(Miasma !=null )
+                {
+                    println("Interact with Miasma Runes Altar" + Miasma.interact("Craft runes"));
+                    Execution.delay(2000);
+                }
+            }else if (player.getCoordinate().getRegionId() == 5150 && options[currentItem] == "Spirit")
+            {
+                SceneObject Spirit = SceneObjectQuery.newQuery().name("Spirit altar").option("Craft runes").results().nearest();
+                if(Spirit !=null )
+                {
+                    println("Interact with Runes Altar" + Spirit.interact("Craft runes"));
+                    Execution.delay(2000);
+                }
+            }else if (player.getCoordinate().getRegionId() == 5150 && options[currentItem] == "Bone")
+            {
+                SceneObject Bone = SceneObjectQuery.newQuery().name("Bone altar").option("Craft runes").results().nearest();
+                if(Bone !=null )
+                {
+                    println("Interact with Bone Runes Altar" + Bone.interact("Craft runes"));
+                    Execution.delay(2000);
+                }
+            }else if (player.getCoordinate().getRegionId() == 5150 && options[currentItem] == "Flesh")
+            {
+                SceneObject Flesh = SceneObjectQuery.newQuery().name("Flesh altar").option("Craft runes").results().nearest();
+                if(Flesh !=null )
+                {
+                    println("Interact with Flesh Runes Altar" + Flesh.interact("Craft runes"));
+                    Execution.delay(2000);
+                }
+            }
+
+        } else {
+
+            SceneObject Portal = SceneObjectQuery.newQuery().name("Dark portal").option("Enter").results().nearest();
+            if (Portal != null && player.getCoordinate().getRegionId() != 5150 && !player.isMoving()) {
+                println("Region ID After Portal Select " + player.getCoordinate().getRegionId());
+                println("Interact with portal" + Portal.interact("Enter"));
+
+                return random.nextLong(1000, 2000);
+
+            }
+
+            if (player.getCoordinate().getRegionId() == 5150 && options[currentItem] == "Miasma") {
+
+                SceneObject Miasma = SceneObjectQuery.newQuery().name("Miasma altar").option("Craft runes").results().nearest();
+                if (Miasma != null) {
+                    println("Interact with Miasma Runes Altar" + Miasma.interact("Craft runes"));
+                    Execution.delay(2000);
+                }
+            } else if (player.getCoordinate().getRegionId() == 5150 && options[currentItem] == "Spirit") {
+                SceneObject Spirit = SceneObjectQuery.newQuery().name("Spirit altar").option("Craft runes").results().nearest();
+                if (Spirit != null) {
+                    println("Interact with Runes Altar" + Spirit.interact("Craft runes"));
+                    Execution.delay(2000);
+                }
+            } else if (player.getCoordinate().getRegionId() == 5150 && options[currentItem] == "Bone") {
+                SceneObject Bone = SceneObjectQuery.newQuery().name("Bone altar").option("Craft runes").results().nearest();
+                if (Bone != null) {
+                    println("Interact with Bone Runes Altar" + Bone.interact("Craft runes"));
+                    Execution.delay(2000);
+                }
+            } else if (player.getCoordinate().getRegionId() == 5150 && options[currentItem] == "Flesh") {
+                SceneObject Flesh = SceneObjectQuery.newQuery().name("Flesh altar").option("Craft runes").results().nearest();
+                if (Flesh != null) {
+                    println("Interact with Flesh Runes Altar" + Flesh.interact("Craft runes"));
+                    Execution.delay(2000);
+                }
+            }
+        }
 
         return random.nextLong(1500,3000);
     }
@@ -361,6 +403,12 @@ public class RunecraftingScript extends LoopingScript {
         return someBool;
     }
 
+    public boolean isBraclet() {
+        return Bracelet;
+    }
+    public void setBraclet(boolean Bracelet) {
+        this.Bracelet = Bracelet;
+    }
 
 
     public void setSomeBool(boolean someBool) {
