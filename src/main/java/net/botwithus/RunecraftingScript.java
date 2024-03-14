@@ -20,6 +20,7 @@ import net.botwithus.rs3.script.LoopingScript;
 import net.botwithus.rs3.script.Script;
 import net.botwithus.rs3.script.config.ScriptConfig;
 import net.botwithus.rs3.util.Regex;
+import net.botwithus.rs3.game.*;
 
 
 import java.time.Instant;
